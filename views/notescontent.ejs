@@ -14,7 +14,7 @@
   <!-- Custom fonts for this template-->
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 <!--  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">-->
-
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <!-- Custom styles for this template-->
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
 
@@ -132,8 +132,6 @@
           
             <%if(data[0].deleted != null){%>
               <p>This note has been deleted</p>
-            <%}else if(data[0].status == 'archived'){%>
-              <p>This note has been archived</p>
             <%}else{%>
               <div class="card mb-4">
                 <div class="card-header">
@@ -148,14 +146,18 @@
               </div>
               <div>
                 <%if(session.current_user){%>
-                <div>
-                  <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
-                    <button class="btn btn-secondary">Upvote</button>
-                  </form>
-                  <form action="/downvote?uuid=<%=data[0].uuid%>" method="POST">
-                    <button class="btn btn-danger">Downvote</button>
-                  </form>
-                </div>
+                  <%if(data[0].status == 'archived'){%>
+                    <p>This note has been archived. Voting is disallowed</p>
+                  <%}else{%>
+                    <div>
+                      <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
+                        <button class="btn btn-secondary">Upvote</button>
+                      </form>
+                      <form action="/downvote?uuid=<%=data[0].uuid%>" method="POST">
+                        <button class="btn btn-danger">Downvote</button>
+                      </form>
+                    </div>
+                  <%}%>
                 <%}else{%>
                   <p>Please login to vote</p>
                 <%}%>

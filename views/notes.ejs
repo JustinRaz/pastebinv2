@@ -14,7 +14,7 @@
   <!-- Custom fonts for this template-->
   <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 <!--  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">-->
-
+ <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <!-- Custom styles for this template-->
   <link href="/css/sb-admin-2.min.css" rel="stylesheet">
 
@@ -54,7 +54,7 @@
           <span>Actions</span></a>
 		  <div id="collapseUtilities" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="noteslist">Notes</a>
+            <a class="collapse-item" href="notes">Notes</a>
             <a class="collapse-item" href="archivednotes">Archived Notes</a>
           </div>
         </div>
@@ -144,12 +144,22 @@
                           
                           <% if(data[i].deleted == null && data[i].status == 'pinned') {%>
                           <tr>
-                          <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><%=data[i].title%></td>
+                          <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><i class="material-icons">pin</i><%=data[i].title%></td>
                           <td><%=data[i].created%></td>
                           <td>
-                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</a>
+                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">
+                              <i class="material-icons">edit</i></a>
                             <form action="/delete?uuid=<%=data[i].uuid%>" method="post">
-                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">delete</i></button>
+                            </form>
+                            <form action="/archive?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">archive</i></button>
+                            </form>
+                            <form action="/unpin?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">push_pin</i></button>
                             </form>
                           </td>
                           </tr>
@@ -162,9 +172,19 @@
                           <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><%=data[i].title%></td>
                           <td><%=data[i].created%></td>
                           <td>
-                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</a>
+                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">
+                              <i class="material-icons">edit</i></a>
                             <form action="/delete?uuid=<%=data[i].uuid%>" method="post">
-                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">delete</i></button>
+                            </form>
+                            <form action="/archive?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">archive</i></button>
+                            </form>
+                            <form action="/pin?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">
+                                <i class="material-icons">push_pin</i></button>
                             </form>
                           </td>
                           </tr>

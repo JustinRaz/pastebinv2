@@ -210,7 +210,72 @@ app.post("/delete", (req, res)=>{
     if(req.session.current_user){
         connection.query(`UPDATE notes SET deleted = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
             if (err) throw err
-            res.redirect('/notesContent?uuid='+req.query.uuid);
+            res.redirect('/notes');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.post("/archive", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE notes SET status = 'archived' WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notes');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.post("/unarchive", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE notes SET status = 'active' WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notes');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.post("/pin", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE notes SET status = 'pinned' WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notes');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.post("/unpin", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE notes SET status = 'active' WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notes');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+
+app.get("/archivednotes", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.session.current_user.uuid+`'`, (err, result)=>{
+            let notes = [];
+
+            result.forEach(element => {
+                notes.push(element);
+            });
+            res.render('archivednotes', {data: notes});
         })
     }else{
         req.session.error = "No Account Logged In"
