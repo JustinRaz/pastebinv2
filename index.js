@@ -167,17 +167,30 @@ app.post("/addnotes", (req, res)=>{
     }
 }) 
 
-app.post("/vote", (req, res)=>{
+app.post("/upvote", (req, res)=>{
     if(req.session.current_user){
-        connection.query(`INSERT INTO votes(account_uuid, note_uuid, vote) VALUES('`+req.session.current_user.uuid+`', '`+req.body.uuid+`', '`+req.body.content+`', '`+"active"+`', now() )`, (err, result)=>{
-            if (err) throw err
-            res.redirect('/notesContent?uuid=');
+        console.log(req.session.current_user.uuid)
+        connection.query(`SELECT * FROM votes WHERE account_uuid = '`+req.session.current_user.uuid+`' & note_uuid = '`+req.query.uuid+`'`, (err, vote)=>{
+            if(err) throw err;
+            if(vote.length > 0){
+                connection.query(`INSERT INTO votes(note_uuid, account_uuid, vote, created) VALUES('`+req.session.current_user.uuid+`', '`+req.query.uuid+`', 'upvote', now())`, (err, result)=>{
+                    if (err) throw err
+                    res.redirect('/notesContent?uuid='+req.query.uuid);
+                })
+            }else{
+                connection.query(`UPDATE votes SET updated = now(), vote = 'upvote' WHERE account_uuid = '`+req.session.current_user.uuid+`' & note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
+                    if (err) throw err
+                    res.redirect('/notesContent?uuid='+req.query.uuid);
+                })
+            }
+
         })
     }else{
         req.session.error = "No Account Logged In"
         res.redirect('/')
     }
 }) 
+
 
 app.listen(3000);
 
