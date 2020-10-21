@@ -146,12 +146,22 @@ app.get("/notes", (req, res)=>{
 
 app.get("/notesContent", (req, res)=>{
     connection.query(`SELECT * FROM notes WHERE uuid = '`+req.query.uuid+`'`, (err, result)=>{
+        if(err) throw err;
         let notes = [];
 
         result.forEach(element => {
             notes.push(element);
         });
-        res.render('notescontent', {data: notes, session: req.session});
+        notes[0] = Object.assign({downvote: 0, upvote: 0}, notes[0]);
+        connection.query(`SELECT COUNT(*) FROM votes WHERE note_uuid = '`+req.query.uuid+`' AND vote = 'downvote'`, (err, result)=>{
+            if(err) throw err
+            notes[0].downvote = result[0]['COUNT(*)'];
+            connection.query(`SELECT COUNT(*) FROM votes WHERE note_uuid = '`+req.query.uuid+`' AND vote = 'upvote'`, (err, result)=>{
+                if(err) throw err
+                notes[0].upvote = result[0]['COUNT(*)'];
+                res.render('notescontent', {data: notes, session: req.session});
+            })
+        })
     })
 })
 
@@ -167,18 +177,29 @@ app.post("/addnotes", (req, res)=>{
     }
 }) 
 
+app.post("/update", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE votes SET  vote = 'upvote', updated = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notesContent?uuid='+req.query.uuid);
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
 app.post("/upvote", (req, res)=>{
     if(req.session.current_user){
-        console.log(req.session.current_user.uuid)
-        connection.query(`SELECT * FROM votes WHERE account_uuid = '`+req.session.current_user.uuid+`' & note_uuid = '`+req.query.uuid+`'`, (err, vote)=>{
+        connection.query(`SELECT * FROM votes WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, vote)=>{
             if(err) throw err;
             if(vote.length > 0){
-                connection.query(`INSERT INTO votes(note_uuid, account_uuid, vote, created) VALUES('`+req.session.current_user.uuid+`', '`+req.query.uuid+`', 'upvote', now())`, (err, result)=>{
+                connection.query(`UPDATE votes SET  vote = 'upvote', updated = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
                     if (err) throw err
                     res.redirect('/notesContent?uuid='+req.query.uuid);
                 })
             }else{
-                connection.query(`UPDATE votes SET updated = now(), vote = 'upvote' WHERE account_uuid = '`+req.session.current_user.uuid+`' & note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
+                connection.query(`INSERT INTO votes(note_uuid, account_uuid, vote, created) VALUES('`+req.query.uuid+`', '`+req.session.current_user.uuid+`', 'upvote', now())`, (err, result)=>{
                     if (err) throw err
                     res.redirect('/notesContent?uuid='+req.query.uuid);
                 })
@@ -191,6 +212,28 @@ app.post("/upvote", (req, res)=>{
     }
 }) 
 
+app.post("/downvote", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`SELECT * FROM votes WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, vote)=>{
+            if(err) throw err;
+            if(vote.length > 0){
+                connection.query(`UPDATE votes SET  vote = 'downvote', updated = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
+                    if (err) throw err
+                    res.redirect('/notesContent?uuid='+req.query.uuid);
+                })
+            }else{
+                connection.query(`INSERT INTO votes(note_uuid, account_uuid, vote, created) VALUES('`+req.query.uuid+`', '`+req.session.current_user.uuid+`', 'downvote', now())`, (err, result)=>{
+                    if (err) throw err
+                    res.redirect('/notesContent?uuid='+req.query.uuid);
+                })
+            }
+
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+}) 
 
 app.listen(3000);
 
