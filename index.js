@@ -99,7 +99,23 @@ app.post('/login', (req, res)=>{
 
 app.get("/notes", (req, res)=>{
     if(req.session.current_user){
-        connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.session.current_user.id+`'`, (err, result)=>{
+        connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.session.current_user.uuid+`'`, (err, result)=>{
+            let notes = [];
+
+            result.forEach(element => {
+                notes.push(element);
+            });
+            res.render('notes', {data: notes});
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.get("/notesContent", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.query.uuid+`' & id = '`+req.query.id+`'`, (err, result)=>{
             let notes = [];
 
             result.forEach(element => {
@@ -115,7 +131,7 @@ app.get("/notes", (req, res)=>{
 
 app.post("/addnotes", (req, res)=>{
     if(req.session.current_user){
-        connection.query(`INSERT INTO notes(account_uuid, title, content, status, created) VALUES('`+req.session.current_user.id+`', '`+req.body.title+`', '`+req.body.content+`', '`+"none"+`', now() )`, (err, result)=>{
+        connection.query(`INSERT INTO notes(account_uuid, title, content, status, created) VALUES('`+req.session.current_user.uuid+`', '`+req.body.title+`', '`+req.body.content+`', '`+"active"+`', now() )`, (err, result)=>{
             if (err) throw err
             res.redirect('/notes');
         })
