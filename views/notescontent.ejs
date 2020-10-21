@@ -129,7 +129,13 @@
         <!-- End of Topbar -->
         <!-- Begin Page Content -->
         <div class="container-fluid">
-            <div class="card mb-4">
+          
+            <%if(data[0].deleted != null){%>
+              <p>This note has been deleted</p>
+            <%}else if(data[0].status == 'archived'){%>
+              <p>This note has been archived</p>
+            <%}else{%>
+              <div class="card mb-4">
                 <div class="card-header">
                     <%=data[0].title%>
                 </div>
@@ -139,21 +145,23 @@
                       <p>Upvotes: <%=data[0].upvote%></p>
                       <p>Downvotes: <%=data[0].downvote%></p>
                 </div>
-            </div>
-            <div>
-              <%if(session.current_user){%>
-              <div>
-                <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
-                  <button class="btn btn-secondary">Upvote</button>
-                </form>
-                <form action="/downvote?uuid=<%=data[0].uuid%>" method="POST">
-                  <button class="btn btn-danger">Downvote</button>
-                </form>
               </div>
-              <%}else{%>
-                <p>Please login to vote</p>
-              <%}%>
-            </div>
+              <div>
+                <%if(session.current_user){%>
+                <div>
+                  <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
+                    <button class="btn btn-secondary">Upvote</button>
+                  </form>
+                  <form action="/downvote?uuid=<%=data[0].uuid%>" method="POST">
+                    <button class="btn btn-danger">Downvote</button>
+                  </form>
+                </div>
+                <%}else{%>
+                  <p>Please login to vote</p>
+                <%}%>
+              </div>
+            <%}%>
+            
         </div>
         <!-- /.container-fluid -->
 

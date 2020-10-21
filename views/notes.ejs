@@ -141,18 +141,34 @@
                     <tbody>
                       <% if (data.length > 0) {%>
                         <% for (i=0; i<data.length; i++){%>
+                          
+                          <% if(data[i].deleted == null && data[i].status == 'pinned') {%>
                           <tr>
                           <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><%=data[i].title%></td>
                           <td><%=data[i].created%></td>
                           <td>
-                            <form action="/update?uuid=<%=data[i].uuid%>" method="post">
-                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</button>
-                            </form>
+                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</a>
                             <form action="/delete?uuid=<%=data[i].uuid%>" method="post">
-                              <button type="submit" name="test" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
                             </form>
                           </td>
                           </tr>
+                          <%}%>
+                        <%}%>
+                        <% for (i=0; i<data.length; i++){%>
+                          
+                          <% if(data[i].deleted == null && data[i].status == 'active') {%>
+                          <tr>
+                          <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><%=data[i].title%></td>
+                          <td><%=data[i].created%></td>
+                          <td>
+                            <a href="/update?uuid=<%=data[i].uuid%>" type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</a>
+                            <form action="/delete?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
+                            </form>
+                          </td>
+                          </tr>
+                          <%}%>
                         <%}%>
                       <%}%>
                     </tbody>

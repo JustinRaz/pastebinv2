@@ -177,9 +177,38 @@ app.post("/addnotes", (req, res)=>{
     }
 }) 
 
+app.get("/update", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`SELECT * FROM notes WHERE uuid = '`+req.query.uuid+`'`, (err, result)=>{
+            let notes = [];
+
+            result.forEach(element => {
+                notes.push(element);
+            });
+            console.log(notes[0])
+            res.render('updatenotes', {data: notes});
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
 app.post("/update", (req, res)=>{
     if(req.session.current_user){
-        connection.query(`UPDATE votes SET  vote = 'upvote', updated = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND note_uuid = '`+req.query.uuid+`'`, (err, result)=>{
+        connection.query(`UPDATE notes SET title = '`+req.body.title+`', content = '`+req.body.content+`', updated = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notesContent?uuid='+req.query.uuid);
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+})
+
+app.post("/delete", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`UPDATE notes SET deleted = now() WHERE account_uuid = '`+req.session.current_user.uuid+`' AND uuid = '`+req.body.uuid+`'`, (err, result)=>{
             if (err) throw err
             res.redirect('/notesContent?uuid='+req.query.uuid);
         })
