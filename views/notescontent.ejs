@@ -140,8 +140,10 @@
                 <div class="card-body">
                     <%=data[0].content%>
                     <br><br>
-                      <p>Upvotes: <%=data[0].upvote%></p>
-                      <p>Downvotes: <%=data[0].downvote%></p>
+                    
+                    <span class="badge badge-success p-2"><i class="material-icons" style="font-size: 12px">thumb_up</i> Upvotes: <%=data[0].upvote%></span>
+                    <span class="badge badge-danger p-2"><i class="material-icons" style="font-size: 12px">thumb_down</i> Downvotes: <%=data[0].downvote%></span>
+                      
                 </div>
               </div>
               <div>
@@ -151,10 +153,10 @@
                   <%}else{%>
                     <div>
                       <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
-                        <button class="btn btn-secondary">Upvote</button>
+                        <button class="btn btn-success"><i class="material-icons">thumb_up</i></button>
                       </form>
                       <form action="/downvote?uuid=<%=data[0].uuid%>" method="POST">
-                        <button class="btn btn-danger">Downvote</button>
+                        <button class="btn btn-danger"><i class="material-icons">thumb_down</i></button>
                       </form>
                     </div>
                   <%}%>
