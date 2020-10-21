@@ -54,7 +54,7 @@
           <span>Actions</span></a>
 		  <div id="collapseUtilities" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="noteslist">Notes</a>
+            <a class="collapse-item" href="/notes">Notes</a>
             <a class="collapse-item" href="archivednotes">Archived Notes</a>
           </div>
         </div>
@@ -97,22 +97,31 @@
             </li>
 
             <div class="topbar-divider d-none d-sm-block"></div>
-
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">USER</span>
-                <img class="img-profile rounded-circle" src="/images/shrek.jpg">
-              </a>
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+            <%if(session.current_user){%>
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small">USER</span>
+                  <img class="img-profile rounded-circle" src="/images/shrek.jpg">
                 </a>
-              </div>
-            </li>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            <%}else{%>
+              
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="/" id="userDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  Login
+                </a>
+              </li>
+            <%}%>
 
           </ul>
 
@@ -127,11 +136,12 @@
                 <div class="card-body">
                     <%=data[0].content%>
                     <br><br>
-                    <p>Upvotes: <%=data[0].upvote%></p>
-                    <p>Downvotes: <%=data[0].downvote%></p>
+                      <p>Upvotes: <%=data[0].upvote%></p>
+                      <p>Downvotes: <%=data[0].downvote%></p>
                 </div>
             </div>
             <div>
+              <%if(session.current_user){%>
               <div>
                 <form action="/upvote?uuid=<%=data[0].uuid%>" method="POST">
                   <button class="btn btn-secondary">Upvote</button>
@@ -140,6 +150,9 @@
                   <button class="btn btn-danger">Downvote</button>
                 </form>
               </div>
+              <%}else{%>
+                <p>Please login to vote</p>
+              <%}%>
             </div>
         </div>
         <!-- /.container-fluid -->

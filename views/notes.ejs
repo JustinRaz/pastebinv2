@@ -142,14 +142,14 @@
                       <% if (data.length > 0) {%>
                         <% for (i=0; i<data.length; i++){%>
                           <tr>
-                          <td><a href="/notescontent?uuid=<%= data[i].account_uuid%>&id=<%= data[i].id%>"><%=data[i].title%></td>
+                          <td><a href="/notescontent?uuid=<%=data[i].uuid%>"><%=data[i].title%></td>
                           <td><%=data[i].created%></td>
                           <td>
-                            <form action="/update?uuid=<%=data[i].id%>" method="post">
-                              <button type="submit" name="id" value="<%=data[i].id%>" class="btn btn-secondary">Update</button>
+                            <form action="/update?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="uuid" value="<%=data[i].uuid%>" class="btn btn-secondary">Update</button>
                             </form>
-                            <form action="/delete?uuid=<%=data[i].id%>" method="post">
-                              <button type="submit" name="test" value="<%=data[i].id%>" class="btn btn-danger">Delete</button>
+                            <form action="/delete?uuid=<%=data[i].uuid%>" method="post">
+                              <button type="submit" name="test" value="<%=data[i].uuid%>" class="btn btn-danger">Delete</button>
                             </form>
                           </td>
                           </tr>

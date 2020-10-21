@@ -48,6 +48,28 @@ function checkExists(code){
     })
 }
 
+function generateUUIDNotes(){
+    let generate = "";
+    const char = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const length = 32;
+    for ( var i = 0; i < length; i++ ) {
+        generate += char.charAt(Math.floor(Math.random() * char.length));
+    }
+    checkExistsNotes(generate);
+    return generate;
+}
+
+function checkExistsNotes(code){
+    connection.query("SELECT * FROM notes WHERE uuid = '"+code+"'", (err, response) => {
+        if (err) throw err;
+        if (response.length > 0){
+            return code;
+        }else{
+            generateUUIDNotes();
+        }
+    })
+}
+
 app.use(session({
     secret: "Ch43y0Vn6Num84W4N",
     saveUninitialized: true,
@@ -97,6 +119,15 @@ app.post('/login', (req, res)=>{
     })
 })
 
+app.get("/logout", (req, res)=>{
+    req.session.destroy((err) => {
+        if(err) {
+            return console.log(err);
+        }
+        res.redirect('/');
+    });
+})
+
 app.get("/notes", (req, res)=>{
     if(req.session.current_user){
         connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.session.current_user.uuid+`'`, (err, result)=>{
@@ -114,24 +145,19 @@ app.get("/notes", (req, res)=>{
 })
 
 app.get("/notesContent", (req, res)=>{
-    if(req.session.current_user){
-        connection.query(`SELECT * FROM notes WHERE account_uuid = '`+req.query.uuid+`' & id = '`+req.query.id+`'`, (err, result)=>{
-            let notes = [];
+    connection.query(`SELECT * FROM notes WHERE uuid = '`+req.query.uuid+`'`, (err, result)=>{
+        let notes = [];
 
-            result.forEach(element => {
-                notes.push(element);
-            });
-            res.render('notes', {data: notes});
-        })
-    }else{
-        req.session.error = "No Account Logged In"
-        res.redirect('/')
-    }
+        result.forEach(element => {
+            notes.push(element);
+        });
+        res.render('notescontent', {data: notes, session: req.session});
+    })
 })
 
 app.post("/addnotes", (req, res)=>{
     if(req.session.current_user){
-        connection.query(`INSERT INTO notes(account_uuid, title, content, status, created) VALUES('`+req.session.current_user.uuid+`', '`+req.body.title+`', '`+req.body.content+`', '`+"active"+`', now() )`, (err, result)=>{
+        connection.query(`INSERT INTO notes(uuid, account_uuid, title, content, status, created) VALUES( '`+generateUUIDNotes()+`','`+req.session.current_user.uuid+`', '`+req.body.title+`', '`+req.body.content+`', '`+"active"+`', now() )`, (err, result)=>{
             if (err) throw err
             res.redirect('/notes');
         })
@@ -141,14 +167,18 @@ app.post("/addnotes", (req, res)=>{
     }
 }) 
 
-app.get("/logout", (req, res)=>{
-    req.session.destroy((err) => {
-        if(err) {
-            return console.log(err);
-        }
-        res.redirect('/');
-    });
-})
+app.post("/vote", (req, res)=>{
+    if(req.session.current_user){
+        connection.query(`INSERT INTO votes(account_uuid, note_uuid, vote) VALUES('`+req.session.current_user.uuid+`', '`+req.body.uuid+`', '`+req.body.content+`', '`+"active"+`', now() )`, (err, result)=>{
+            if (err) throw err
+            res.redirect('/notesContent?uuid=');
+        })
+    }else{
+        req.session.error = "No Account Logged In"
+        res.redirect('/')
+    }
+}) 
+
 app.listen(3000);
 
 
